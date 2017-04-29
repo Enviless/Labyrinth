@@ -12,7 +12,7 @@ wall2 = box(pos = (-l/2.0,0, r), axis = (0, 1.0, 0), size = (l+0.5, 0.5, 3.0*r),
 wall3 = box(pos = (0, l/2.0, r), axis = (1.0, 0, 0), size = (l+0.5, 0.5, 3.0*r), material = materials.wood, color = color.orange)
 wall4 = box(pos = (0,-l/2.0, r), axis = (1.0, 0, 0), size = (l+0.5, 0.5, 3.0*r), material = materials.wood, color = color.orange)
 wall5 = box(pos = (1, 0, r), axis = (1.0, 1.0 ,0), size = (l/2.0, 0.5, 3.0*r), material = materials.wood, color = color.orange)
-cone1 = cone(pos=(5,2,0.1), axis=(0,0,-1), radius = 0.6, color = color.black)
+cone1 = cone(pos=(-3,2,0.1), axis=(0,0,-1), radius = 0.7, color = color.black)
 #k=1 #magitude of velocity after collision / before collision
 def wall_collide( b, w ):
     """ w is a wall (a box with a length and width)
@@ -103,15 +103,21 @@ while True:
             friction = -vector(g.x, g.y, 0)
         else:
             friction = -norm(vector(g.x, g.y, 0)) * abs(g.z) * friction_coefficient
-
+    dist_ball_hole = (ball.pos.x - cone1.pos.x)**2 + (ball.pos.y - cone1.pos.y)**2
+    a = vector(0, 0, 0)
+    if dist_ball_hole < 0.7**2:
+        a = 5 * norm(vector(cone1.pos.x, cone1.pos.y, 0) - vector(ball.pos.x, ball.pos.y, 0)) / dist_ball_hole
     g_component = vector(g.x, g.y, 0)
-    accel = g_component + friction
+    accel = g_component + friction + a
     velocity += accel*dt
     ball.pos += velocity * dt
 
     walls = [wall1, wall2, wall3, wall4, wall5]
     for wall in walls:
         wall_collide(ball, wall)
+    dist_ball_hole = (ball.pos.x - cone1.pos.x)**2 + (ball.pos.y - cone1.pos.y)**2
+    if dist_ball_hole < 0.2**2:
+        break
 
 
 
