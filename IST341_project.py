@@ -3,10 +3,10 @@ import math
 
 scene = display(title='labyrinth', x=100, y=0, width=800, height=800)
 
-r = 0.5
-l = 12.0
+r = 0.5  # centimeter
+l = 30   
 
-ball = sphere(pos = vector(4.5 , 4 , r), radius = r, material = materials.rough, color = color.cyan)
+ball = sphere(pos = vector(l/2.0-r-0.5 , 10 , r), radius = r, material = materials.rough, color = color.cyan)
 
 class Hole:
     def __init__(self, pos, r):
@@ -14,8 +14,8 @@ class Hole:
         self.r = r
         self.graph = shapes.circle(pos=pos, radius=r)
 
-hole1 = Hole((5,-5),0.7)
-hole2 = Hole((-2,4.2), 0.7)
+hole1 = Hole((10.0,-10.0),0.8)
+hole2 = Hole((-10,10), 0.8)
 holes = [hole1, hole2]
 
 rt = shapes.rectangle(pos=(0,0), width=l, height=l)
@@ -25,11 +25,11 @@ for hole in holes:
     sp -= hole.graph
 board = extrusion(pos=straight, shape=sp, material = materials.wood, color = color.orange)
 
-wall1 = box(pos = (l/2.0, 0, r), axis = (0, 1.0, 0), size = (l+0.5, 0.5, 3.0*r), material = materials.wood, color = color.orange)
-wall2 = box(pos = (-l/2.0,0, r), axis = (0, 1.0, 0), size = (l+0.5, 0.5, 3.0*r), material = materials.wood, color = color.orange)
-wall3 = box(pos = (0, l/2.0, r), axis = (1.0, 0, 0), size = (l+0.5, 0.5, 3.0*r), material = materials.wood, color = color.orange)
-wall4 = box(pos = (0,-l/2.0, r), axis = (1.0, 0, 0), size = (l+0.5, 0.5, 3.0*r), material = materials.wood, color = color.orange)
-wall5 = box(pos = (1, 0, r), axis = (1.0, 1.0 ,0), size = (l/2.0, 0.5, 3.0*r), material = materials.wood, color = color.orange)
+wall1 = box(pos = (l/2.0, 0, 1.5*r), axis = (0, 1.0, 0), size = (l+1, 1, 3.0*r), material = materials.wood, color = color.orange)
+wall2 = box(pos = (-l/2.0,0, 1.5*r), axis = (0, 1.0, 0), size = (l+1, 1, 3.0*r), material = materials.wood, color = color.orange)
+wall3 = box(pos = (0, l/2.0, 1.5*r), axis = (1.0, 0, 0), size = (l+1, 1, 3.0*r), material = materials.wood, color = color.orange)
+wall4 = box(pos = (0,-l/2.0, 1.5*r), axis = (1.0, 0, 0), size = (l+1, 1, 3.0*r), material = materials.wood, color = color.orange)
+wall5 = box(pos = (1, 0, 1.5*r), axis = (1.0, 1.0 ,0), size = (l/2.0, 1, 3.0*r), material = materials.wood, color = color.orange)
 walls = [wall1, wall2, wall3, wall4, wall5]
 
 
@@ -39,7 +39,7 @@ def wall_collide( b, w ):
         returns True if b collides with w (in length or width)
         returns False otherwise
     """
-    k = 0.8 #k=1 #magitude of velocity after collision / before collision
+    k = 0.7 #k=1 #magitude of velocity after collision / before collision
     global velocity
     # w.pos is the center of the wall
     # b.pos is the position (center) of the ball
@@ -80,7 +80,7 @@ def wall_collide( b, w ):
                 b.pos = corner[i] + b.radius * norm(b.pos - corner[i])
 
 def hole_edge_colide(b, h):
-    k = 0.8
+    k = 0.7
     global velocity
     proj_hole_to_ball_x_y = vector(b.pos.x, b.pos.y ,0) - h.pos
     colide_point = h.pos + h.r * norm(proj_hole_to_ball_x_y)
@@ -102,13 +102,13 @@ def hole_edge_colide(b, h):
 
 
 
-g = vector(0, 0, -9.8)
+g = vector(0, 0, -20)
 RATE = 200
 dt = 1.0/(1.0*RATE)
 alpha = 0
 beta = 0
 velocity = vector(0, 0, 0)
-friction_coefficient = 0.03
+friction_coefficient = 0.003
 
 while ball.pos.z >= (-5) * ball.radius:
     rate(RATE)
@@ -120,23 +120,23 @@ while ball.pos.z >= (-5) * ball.radius:
         v = norm(cross(u, f))  # v == norm of (up cross forward)
 
         if k in ['left', 'right', 'up', 'down']:
-            twodeg = radians(2)
+            deg = radians(2)
             if k == 'up' and alpha < 10:
-                scene.forward = rotate(scene.forward, -twodeg, v)
+                scene.forward = rotate(scene.forward, -deg, v)
                 alpha += 2
-                g = rotate(g, -twodeg, v)
+                g = rotate(g, -deg, v)
             if k == 'down' and alpha > -10:
-                scene.forward = rotate(scene.forward, twodeg, v)
+                scene.forward = rotate(scene.forward, deg, v)
                 alpha -= 2
-                g = rotate(g, twodeg, v)
+                g = rotate(g, deg, v)
             if k == 'left' and beta < 10:
-                scene.forward = rotate(scene.forward, twodeg, u)
+                scene.forward = rotate(scene.forward, deg, u)
                 beta += 2
-                g = rotate(g, twodeg, u)
+                g = rotate(g, deg, u)
             if k == 'right' and beta > -10:
-                scene.forward = rotate(scene.forward, -twodeg, u)
+                scene.forward = rotate(scene.forward, -deg, u)
                 beta -= 2
-                g = rotate(g, -twodeg, u)
+                g = rotate(g, -deg, u)
     if mag(velocity) > 0:
         friction = -norm(velocity) * abs(g.z) * friction_coefficient
     else:
