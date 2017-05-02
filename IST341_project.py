@@ -1,12 +1,12 @@
 from visual import *
 import math
 
-scene = display(title='labyrinth')
+scene = display(title='labyrinth', x=100, y=0, width=800, height=800)
 
 r = 0.5
 l = 12.0
 
-ball = sphere(pos = vector(4 , 4 , r), radius = r, material = materials.rough, color = color.cyan)
+ball = sphere(pos = vector(4.5 , 4 , r), radius = r, material = materials.rough, color = color.cyan)
 
 class Hole:
     def __init__(self, pos, r):
